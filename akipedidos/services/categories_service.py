@@ -10,6 +10,7 @@ class Category:
 		self.panel_url = settings.base_url.rstrip('/') + settings.panel_category_page
 		self.register_url = settings.base_url.rstrip('/') + settings.action_get_register_category
 		self.edit_url = settings.base_url.rstrip('/') + settings.action_edit_category
+		self.remove_url = settings.base_url.rstrip('/') + settings.action_remove_category
 
 	def extract_csrf(self,html):
 	    soup = BeautifulSoup(html, "html.parser")
@@ -99,3 +100,26 @@ class Category:
 			return response.json()
 		except Exception:
 			return {'raw': response.text}
+
+	def delete(self,category_id):
+
+		session = self.session_manager.get_session()
+		response = session.get(self.panel_url, timeout=10)
+		response.raise_for_status()
+		csrf = self.extract_csrf(response.text)
+		if not csrf:
+			raise RuntimeError('CSRF token not found')
+	    
+		data = {
+			'action': 'removeCategory',
+			'id': category_id,
+			'_token': csrf,
+		}
+
+		response = session.post(self.remove_url, data=data, timeout=15)
+		response.raise_for_status()
+		try:
+			return response.json()
+		except Exception:
+			return {'raw': response.text}
+
