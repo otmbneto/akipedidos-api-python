@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     panel_category_page: str
     action_get_register_category: str
     action_get_items_from_category: str
+    action_edit_category: str
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
