@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     action_get_items_from_category: str
     action_edit_category: str
     action_remove_category: str
+    action_hide_category: str
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()
