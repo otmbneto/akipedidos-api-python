@@ -2,7 +2,7 @@ from typing import List, Dict, Optional
 from bs4 import BeautifulSoup
 from ..core.config import settings
 
-class Category:
+class CategoryService:
 	
 	def __init__(self, session_manager):
 		
