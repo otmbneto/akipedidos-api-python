@@ -29,7 +29,21 @@ class Category:
 		if spans:
 			for span in spans:
 				if "id" in span.attrs and span["id"].startswith("strongAdditionalCategory_"):
-					categories.append({"id": int(span["id"].replace("strongAdditionalCategory_","")),"name":span.text})
+					cat_data = {"id": int(span["id"].replace("strongAdditionalCategory_",""))}
+					
+					for attr in ["name","position","type_icon","icon","icon_name","icon_img"]:
+						match = soup.find("input",{"id": attr + "_" + str(cat_data["id"])})
+						if match:
+							cat_data[attr] = match.get("value")
+
+					cat_data["days"] = {}
+					
+					for attr in ["sun","mon","tue","wed","thu","fri","sat"]:
+						match = soup.find("input",{"id": attr + "_" + str(cat_data["id"])})
+						if match:
+							cat_data["days"][attr] = match.get("value")
+
+					categories.append(cat_data)
 
 		return categories
 
