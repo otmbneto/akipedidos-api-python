@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     action_register_item: str
     action_edit_item: str
     action_hide_item: str
+    action_remove_item: str
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()

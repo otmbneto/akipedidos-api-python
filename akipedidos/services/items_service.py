@@ -12,6 +12,7 @@ class ItemsService:
 		self.register_url = settings.base_url.rstrip('/') + settings.action_register_item
 		self.edit_url = settings.base_url.rstrip('/') + settings.action_edit_item
 		self.hide_url = settings.base_url.rstrip('/') + settings.action_hide_item
+		self.remove_url = settings.base_url.rstrip('/') + settings.action_remove_item
 
 	def extract_csrf(self,html):
 	    soup = BeautifulSoup(html, "html.parser")
@@ -222,6 +223,29 @@ class ItemsService:
 	        return resp.json()
 	    except:
 	        return {"raw": response.text}
+
+
+	def delete(self,item_id: int):
+
+		session = self.session_manager.get_session()
+		response = session.get(self.panel_url, timeout=10)
+		response.raise_for_status()
+		csrf = self.extract_csrf(response.text)
+		if not csrf:
+			raise RuntimeError('CSRF token not found')
+	    
+		data = {
+			'action': 'removeItem',
+			'id': item_id,
+			'_token': csrf,
+		}
+
+		response = session.post(self.remove_url, data=data, timeout=15)
+		response.raise_for_status()
+		try:
+			return response.json()
+		except Exception:
+			return {'raw': response.text}
 
 	def hide(self,item_id:int,hidden):
 
