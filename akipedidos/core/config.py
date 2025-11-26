@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
+    
     api_name: str = "Proxy API for Online Service"
     debug: bool = True
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     action_edit_category: str
     action_remove_category: str
     action_hide_category: str
+    action_register_item: str
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()
