@@ -7,12 +7,12 @@ class ItemsService:
 	def __init__(self,session_manager):
 
 		self.session_manager = session_manager
-		self.panel_url = settings.base_url.rstrip('/') + settings.panel_item_page
-		self.get_url = settings.base_url.rstrip('/') + settings.action_get_items_from_category
-		self.register_url = settings.base_url.rstrip('/') + settings.action_register_item
-		self.edit_url = settings.base_url.rstrip('/') + settings.action_edit_item
-		self.hide_url = settings.base_url.rstrip('/') + settings.action_hide_item
-		self.remove_url = settings.base_url.rstrip('/') + settings.action_remove_item
+		self.panel_url = settings.base_url + "/panel/company/item"
+		self.get_url = settings.base_url + "/util/company/getitemsfromcategory"
+		self.register_url = settings.base_url + "/util/company/registeritem"
+		self.edit_url = settings.base_url + "/util/company/edititem"
+		self.hide_url = settings.base_url + "/util/company/setitemhidden"
+		self.remove_url = settings.base_url + "/util/company/removeitem"
 
 	def extract_csrf(self,html):
 	    soup = BeautifulSoup(html, "html.parser")

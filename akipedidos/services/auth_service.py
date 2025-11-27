@@ -7,6 +7,7 @@ class Auth:
 	def __init__(self, session_manager):
 
 		self.session_manager = session_manager
+		self.login_url = settings.base_url + "/panel/company"
 
 	def _extract_form_fields(self,html: str) -> dict:
 	    
@@ -32,9 +33,8 @@ class Auth:
 
 	def login(self, username: str, password: str) -> Optional[bool]:
 		
-		LOGIN_PAGE_URL = settings.base_url + settings.login_path
 		session = self.session_manager.get_session()
-		response = session.get(LOGIN_PAGE_URL, timeout=15)
+		response = session.get(self.login_url, timeout=15)
 		response.raise_for_status()
 
 		fields = self._extract_form_fields(response.text)
@@ -49,7 +49,7 @@ class Auth:
 
 		soup = BeautifulSoup(response.text, "html.parser")
 		form = soup.find("form")
-		action = LOGIN_PAGE_URL
+		action = self.login_url
 
 		if form and form.get('action'):
 			act = form.get('action')
@@ -58,7 +58,7 @@ class Auth:
 			elif act.startswith('http'):
 				action = act
 			else:
-				action = LOGIN_PAGE_URL.rstrip('/') + '/' + act.lstrip('/')
+				action = self.login_url.rstrip('/') + '/' + act.lstrip('/')
 
 		post = session.post(action, data=fields, allow_redirects=True, timeout=15)
 		post.raise_for_status()

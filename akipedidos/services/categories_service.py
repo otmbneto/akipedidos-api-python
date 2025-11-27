@@ -7,11 +7,11 @@ class CategoryService:
 	def __init__(self, session_manager):
 		
 		self.session_manager = session_manager
-		self.panel_url = settings.base_url.rstrip('/') + settings.panel_category_page
-		self.register_url = settings.base_url.rstrip('/') + settings.action_get_register_category
-		self.edit_url = settings.base_url.rstrip('/') + settings.action_edit_category
-		self.remove_url = settings.base_url.rstrip('/') + settings.action_remove_category
-		self.hide_url = settings.base_url.rstrip('/') + settings.action_hide_category
+		self.panel_url = settings.base_url + "/panel/company/category"
+		self.register_url = settings.base_url + "/util/company/registercategory"
+		self.edit_url = settings.base_url + "/util/company/editcategory"
+		self.remove_url = settings.base_url + "/util/company/removecategory"
+		self.hide_url = settings.base_url + "/util/company/setcategoryhidden"
 
 	def extract_csrf(self,html):
 	    soup = BeautifulSoup(html, "html.parser")
