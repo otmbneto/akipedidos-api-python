@@ -28,24 +28,25 @@ Breaking changes may occur if the platform updates.
 from akipedidos import AkipedidosClient
 import json
 
-client = AkipedidosClient(email="...", password="...")
+client = AkiPedidosClient("https://yourdomain.com/")
+login = client.auth.login("...", "...")
+if login:
+    # Create an item
+    hours = [...]  # build your hours list
+    result = client.items.create(
+        category="109",
+        name="Pizza de Mussarela",
+        external_code="103",
+        ncm_code="22021003",
+        description="Pizza de mussarella",
+        price="15",
+        price_cost="10",
+        days={'sun':'1','mon':'1','tue':'1','wed':'1','thu':'1','fri':'1','sat':'1'},
+        hours_json=json.dumps(hours)
+    )
 
-# Create an item
-hours = [...]  # build your hours list
-result = client.items.create(
-    category="109",
-    name="Pizza de Mussarela",
-    external_code="103",
-    ncm_code="22021003",
-    description="Pizza de mussarella",
-    price="15",
-    price_cost="10",
-    days={'sun':'1','mon':'1','tue':'1','wed':'1','thu':'1','fri':'1','sat':'1'},
-    hours_json=json.dumps(hours)
-)
+    print(result)
 
-print(result)
-
-# Hide item
-client.items.hide(item_id=330, hidden=1)
+    # Hide item
+    client.items.hide(item_id=330, hidden=1)
 ```
