@@ -1,12 +1,11 @@
-from typing import List, Dict, Optional
+from .service import Service
 from bs4 import BeautifulSoup
 
-class CategoryService:
+class CategoryService(Service):
 	
 	def __init__(self, session_manager):
 		
-		self.session = session_manager.get_session()
-		self._set_service_routes(session_manager.get_domain())
+		super().__init__(session_manager) 
 
 	def _set_service_routes(self,domain):
 
@@ -15,11 +14,6 @@ class CategoryService:
 		self.edit_url = domain + "/util/company/editcategory"
 		self.remove_url = domain + "/util/company/removecategory"
 		self.hide_url = domain + "/util/company/setcategoryhidden"
-
-	def extract_csrf(self,html):
-	    soup = BeautifulSoup(html, "html.parser")
-	    tag = soup.find("meta", {"name": "csrf-token"})
-	    return tag["content"] if tag else None
 
 	def list(self):
 		
@@ -51,9 +45,7 @@ class CategoryService:
 
 	def create(self, name: str, position: int = 0, type_icon: str = "0", icon: str = "fa-tags", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
 		
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
 
@@ -84,9 +76,7 @@ class CategoryService:
 
 	def edit(self,category_id: int,name: str="",position: int = 0, type_icon: str = "0", icon: str = "", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
 		
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
 
@@ -118,9 +108,7 @@ class CategoryService:
 
 	def delete(self,category_id: int):
 
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
 	    
@@ -139,9 +127,7 @@ class CategoryService:
 
 	def hide(self,category_id: int,hidden: int):
 	
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
 

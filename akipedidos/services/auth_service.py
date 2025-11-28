@@ -1,12 +1,11 @@
-from typing import Optional
+from .service import Service
 from bs4 import BeautifulSoup
 
-class Auth:
+class Auth(Service):
 	
 	def __init__(self, session_manager):
 
-		self.session = session_manager.get_session()
-		self._set_service_routes(session_manager.get_domain())
+		super().__init__(session_manager) 
 
 	def _set_service_routes(self,domain):
 
@@ -34,7 +33,7 @@ class Auth:
 
 	    return fields
 
-	def login(self,email: str, password: str) -> Optional[bool]:
+	def login(self,email: str, password: str):
 		
 		response = self.session.get(self.login_url, timeout=15)
 		response.raise_for_status()

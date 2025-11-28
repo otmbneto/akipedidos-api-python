@@ -1,28 +1,20 @@
-from typing import List, Dict, Optional
+from .service import Service
 from bs4 import BeautifulSoup
 
-class ReportsService:
+class ReportsService(Service):
 
     def __init__(self,session_manager):
 
-        self.session = session_manager.get_session()
-        self._set_service_routes(session_manager.get_domain())
+        super().__init__(session_manager) 
 
     def _set_service_routes(self,domain):
 
         self.panel_url = domain.rstrip('/') + "/panel/company/report"
         self.order_url =  domain.rstrip('/') + "/util/company/getordersreport"
 
-    def extract_csrf(self,html):
-        soup = BeautifulSoup(html, "html.parser")
-        tag = soup.find("meta", {"name": "csrf-token"})
-        return tag["content"] if tag else None
-
     def get_orders_report(self,date_initial,date_final):
 
-        response = self.session.get(self.panel_url, timeout=10)
-        response.raise_for_status()
-        csrf = self.extract_csrf(response.text)
+        csrf = self.get_csrf(self.panel_url)
         if not csrf:
             return {"error": "CSRF token not found"}
 

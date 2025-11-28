@@ -1,12 +1,11 @@
-from typing import List, Dict, Optional
+from .service import Service
 from bs4 import BeautifulSoup
 
-class ItemsService:
+class ItemsService(Service):
 
 	def __init__(self,session_manager):
 
-		self.session = session_manager.get_session()
-		self._set_service_routes(session_manager.get_domain())
+		super().__init__(session_manager)
 
 	def _set_service_routes(self,domain):
 
@@ -18,17 +17,9 @@ class ItemsService:
 		self.remove_url = domain + "/util/company/removeitem"
 
 
-	def extract_csrf(self,html):
-	    soup = BeautifulSoup(html, "html.parser")
-	    tag = soup.find("meta", {"name": "csrf-token"})
-	    return tag["content"] if tag else None
-
 	def list(self,categories: list = []):
 
-		# Load the main Items page to fetch the CSRF token
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			return {"items": [], "error": "CSRF token not found"}
 
@@ -85,20 +76,18 @@ class ItemsService:
 			    hours_json: str = "",
 			):
 
-	    response = self.session.get(self.panel_url, timeout=10)
-	    response.raise_for_status()
-	    csrf = self.extract_csrf(response.text)
-	    if not csrf:
-	        return {"error": "CSRF token not found"}
+		csrf = self.get_csrf(self.panel_url)
+		if not csrf:
+			return {"error": "CSRF token not found"}
 
 
-	    # default days
-	    if days is None:
-	        days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
+		# default days
+		if days is None:
+			days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
 
 
 	    # base payload EXACTLY like Chrome sends
-	    data = {
+		data = {
 	        "action": "registerItem",
 	        "category": category,
 	        "name": name,
@@ -123,22 +112,22 @@ class ItemsService:
 	        "hours": hours_json,
 	    }
 
-	    days = days or {}
-	    for d in ['sun','mon','tue','wed','thu','fri','sat']:
-	        data[d] = '1' if days.get(d) else '0'
+		days = days or {}
+		for d in ['sun','mon','tue','wed','thu','fri','sat']:
+			data[d] = '1' if days.get(d) else '0'
 
-	    # Insert slide items
-	    if slide_item:
-	        for i, slide in enumerate(slide_item):
-	            data[f"slide_item_{i}"] = slide
-	    
-	    headers = {"X-CSRF-TOKEN": csrf}
-	    response = self.session.post(self.register_url, data=data, headers=headers)
-	    try:
-	        resp.raise_for_status()
-	        return resp.json()
-	    except:
-	        return {"raw": response.text}
+		# Insert slide items
+		if slide_item:
+			for i, slide in enumerate(slide_item):
+				data[f"slide_item_{i}"] = slide
+
+		headers = {"X-CSRF-TOKEN": csrf}
+		response = self.session.post(self.register_url, data=data, headers=headers)
+		try:
+			resp.raise_for_status()
+			return resp.json()
+		except:
+			return {"raw": response.text}
 
 	def edit(self,
 				id:int,
@@ -167,9 +156,7 @@ class ItemsService:
 			    hours_json: str = "",
 			):
 
-	    response = self.session.get(self.panel_url, timeout=10)
-	    response.raise_for_status()
-	    csrf = self.extract_csrf(response.text)
+	    csrf = self.get_csrf(self.panel_url)
 	    if not csrf:
 	        return {"error": "CSRF token not found"}
 
@@ -227,9 +214,7 @@ class ItemsService:
 
 	def delete(self,item_id: int):
 
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
 	    
@@ -248,9 +233,7 @@ class ItemsService:
 
 	def hide(self,item_id:int,hidden):
 
-		response = self.session.get(self.panel_url, timeout=10)
-		response.raise_for_status()
-		csrf = self.extract_csrf(response.text)
+		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
 
