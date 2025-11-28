@@ -5,7 +5,7 @@ class CategoryService:
 	
 	def __init__(self, session_manager):
 		
-		self.session_manager = session_manager
+		self.session = session_manager.get_session()
 		self._set_service_routes(session_manager.get_domain())
 
 	def _set_service_routes(self,domain):
@@ -23,8 +23,7 @@ class CategoryService:
 
 	def list(self):
 		
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		soup = BeautifulSoup(response.text, "html.parser")
 		spans = soup.find_all("span")
@@ -52,8 +51,7 @@ class CategoryService:
 
 	def create(self, name: str, position: int = 0, type_icon: str = "0", icon: str = "fa-tags", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
 		
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -77,7 +75,7 @@ class CategoryService:
 			files = {'icon_img': (icon_file.filename, icon_file.file, icon_file.content_type)}
 
 		headers = {'X-CSRF-TOKEN': csrf}
-		response = session.post(self.register_url, data=data, files=files, headers=headers, timeout=15)
+		response = self.session.post(self.register_url, data=data, files=files, headers=headers, timeout=15)
 		response.raise_for_status()
 		try:
 			return response.json()
@@ -86,8 +84,7 @@ class CategoryService:
 
 	def edit(self,category_id: int,name: str="",position: int = 0, type_icon: str = "0", icon: str = "", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
 		
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -112,7 +109,7 @@ class CategoryService:
 			files = {'icon_img': (icon_file.filename, icon_file.file, icon_file.content_type)}
 
 		headers = {'X-CSRF-TOKEN': csrf}
-		response = session.post(self.edit_url, data=data, files=files, headers=headers, timeout=15)
+		response = self.session.post(self.edit_url, data=data, files=files, headers=headers, timeout=15)
 		response.raise_for_status()
 		try:
 			return response.json()
@@ -121,8 +118,7 @@ class CategoryService:
 
 	def delete(self,category_id: int):
 
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -134,7 +130,7 @@ class CategoryService:
 			'_token': csrf,
 		}
 
-		response = session.post(self.remove_url, data=data, timeout=15)
+		response = self.session.post(self.remove_url, data=data, timeout=15)
 		response.raise_for_status()
 		try:
 			return response.json()
@@ -142,10 +138,8 @@ class CategoryService:
 			return {'raw': response.text}
 
 	def hide(self,category_id: int,hidden: int):
-		
-
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+	
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -158,7 +152,7 @@ class CategoryService:
 			'hidden': hidden,
 		}
 
-		response = session.post(self.hide_url, data=data, timeout=15)
+		response = self.session.post(self.hide_url, data=data, timeout=15)
 		response.raise_for_status()
 		try:
 			return response.json()

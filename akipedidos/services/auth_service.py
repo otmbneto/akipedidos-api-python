@@ -5,7 +5,7 @@ class Auth:
 	
 	def __init__(self, session_manager):
 
-		self.session_manager = session_manager
+		self.session = session_manager.get_session()
 		self._set_service_routes(session_manager.get_domain())
 
 	def _set_service_routes(self,domain):
@@ -36,8 +36,7 @@ class Auth:
 
 	def login(self,email: str, password: str) -> Optional[bool]:
 		
-		session = self.session_manager.get_session()
-		response = session.get(self.login_url, timeout=15)
+		response = self.session.get(self.login_url, timeout=15)
 		response.raise_for_status()
 
 		fields = self._extract_form_fields(response.text)
@@ -61,9 +60,9 @@ class Auth:
 			else:
 				action = self.login_url.rstrip('/') + '/' + act.lstrip('/')
 
-		post = session.post(action, data=fields, allow_redirects=True, timeout=15)
+		post = self.session.post(action, data=fields, allow_redirects=True, timeout=15)
 		post.raise_for_status()
-		# simple heuristic: if the response contains the login form again, fail
+
 		if 'name="email"' in post.text and 'name="password"' in post.text:
 			return False
 

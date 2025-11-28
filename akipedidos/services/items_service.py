@@ -5,7 +5,7 @@ class ItemsService:
 
 	def __init__(self,session_manager):
 
-		self.session_manager = session_manager
+		self.session = session_manager.get_session()
 		self._set_service_routes(session_manager.get_domain())
 
 	def _set_service_routes(self,domain):
@@ -25,10 +25,8 @@ class ItemsService:
 
 	def list(self,categories: list = []):
 
-		session = self.session_manager.get_session()
-
 		# Load the main Items page to fetch the CSRF token
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -45,7 +43,7 @@ class ItemsService:
 
 			data["category_id"] = category["id"]
 
-		response = session.post(
+		response = self.session.post(
 							self.get_url,
 							data=data,
 							timeout=10
@@ -87,8 +85,7 @@ class ItemsService:
 			    hours_json: str = "",
 			):
 
-	    session = self.session_manager.get_session()
-	    response = session.get(self.panel_url, timeout=10)
+	    response = self.session.get(self.panel_url, timeout=10)
 	    response.raise_for_status()
 	    csrf = self.extract_csrf(response.text)
 	    if not csrf:
@@ -136,7 +133,7 @@ class ItemsService:
 	            data[f"slide_item_{i}"] = slide
 	    
 	    headers = {"X-CSRF-TOKEN": csrf}
-	    response = session.post(self.register_url, data=data, headers=headers)
+	    response = self.session.post(self.register_url, data=data, headers=headers)
 	    try:
 	        resp.raise_for_status()
 	        return resp.json()
@@ -170,8 +167,7 @@ class ItemsService:
 			    hours_json: str = "",
 			):
 
-	    session = self.session_manager.get_session()
-	    response = session.get(self.panel_url, timeout=10)
+	    response = self.session.get(self.panel_url, timeout=10)
 	    response.raise_for_status()
 	    csrf = self.extract_csrf(response.text)
 	    if not csrf:
@@ -219,7 +215,7 @@ class ItemsService:
 	            data[f"slide_item_{i}"] = slide
 	    
 	    headers = {"X-CSRF-TOKEN": csrf}
-	    response = session.post(self.edit_url, data=data, headers=headers)
+	    response = self.session.post(self.edit_url, data=data, headers=headers)
 	    print(response)
 	    try:
 	        print("RAW TEXT: " + str(response.text))
@@ -231,8 +227,7 @@ class ItemsService:
 
 	def delete(self,item_id: int):
 
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -244,7 +239,7 @@ class ItemsService:
 			'_token': csrf,
 		}
 
-		response = session.post(self.remove_url, data=data, timeout=15)
+		response = self.session.post(self.remove_url, data=data, timeout=15)
 		response.raise_for_status()
 		try:
 			return response.json()
@@ -253,8 +248,7 @@ class ItemsService:
 
 	def hide(self,item_id:int,hidden):
 
-		session = self.session_manager.get_session()
-		response = session.get(self.panel_url, timeout=10)
+		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		csrf = self.extract_csrf(response.text)
 		if not csrf:
@@ -267,7 +261,7 @@ class ItemsService:
 			'type': "true" if hidden else "false",
 		}
 
-		response = session.post(self.hide_url, data=data, timeout=15)
+		response = self.session.post(self.hide_url, data=data, timeout=15)
 		#response.raise_for_status()
 		try:
 			return response.json()

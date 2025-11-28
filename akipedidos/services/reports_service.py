@@ -5,7 +5,7 @@ class ReportsService:
 
     def __init__(self,session_manager):
 
-        self.session_manager = session_manager
+        self.session = session_manager.get_session()
         self._set_service_routes(session_manager.get_domain())
 
     def _set_service_routes(self,domain):
@@ -20,8 +20,7 @@ class ReportsService:
 
     def get_orders_report(self,date_initial,date_final):
 
-        session = self.session_manager.get_session()
-        response = session.get(self.panel_url, timeout=10)
+        response = self.session.get(self.panel_url, timeout=10)
         response.raise_for_status()
         csrf = self.extract_csrf(response.text)
         if not csrf:
@@ -34,7 +33,7 @@ class ReportsService:
                 "_token": csrf,
         }
 
-        response = session.post(self.order_url, data=data, timeout=15)
+        response = self.session.post(self.order_url, data=data, timeout=15)
         response.raise_for_status()
         try:
             return response.json()
