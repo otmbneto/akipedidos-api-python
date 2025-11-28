@@ -1,13 +1,16 @@
 from typing import Optional
 from bs4 import BeautifulSoup
-from ..core.config import settings
 
 class Auth:
 	
 	def __init__(self, session_manager):
 
 		self.session_manager = session_manager
-		self.login_url = settings.base_url + "/panel/company"
+		self._set_service_routes(session_manager.get_domain())
+
+	def _set_service_routes(self,domain):
+
+		self.login_url = domain + "/panel/company"
 
 	def _extract_form_fields(self,html: str) -> dict:
 	    
@@ -31,7 +34,7 @@ class Auth:
 
 	    return fields
 
-	def login(self, username: str, password: str) -> Optional[bool]:
+	def login(self,email: str, password: str) -> Optional[bool]:
 		
 		session = self.session_manager.get_session()
 		response = session.get(self.login_url, timeout=15)
@@ -39,9 +42,7 @@ class Auth:
 
 		fields = self._extract_form_fields(response.text)
 
-		print(fields)
-		# overwrite credentials
-		fields['email'] = username
+		fields['email'] = email
 		fields['password'] = password
 
 		if "is_employee" in fields:

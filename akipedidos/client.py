@@ -9,13 +9,15 @@ class AkiPedidosClient:
     Main entry point for interacting with the AkiPedidos API.
     """
 
-    def __init__(self):
+    def __init__(self,domain):
         # Session manager handles:
         # - cookies
         # - CSRF tokens
         # - logged state
         # - base headers
-        self.session = SessionManager()
+
+        self.domain = domain
+        self.session = SessionManager(domain)
 
         # Concrete service interfaces
         self.auth = Auth(self.session)

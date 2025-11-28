@@ -1,12 +1,12 @@
 import requests
 from uuid import uuid4
 from bs4 import BeautifulSoup
-from ..core.config import settings
 
 class SessionManager:
     
-	def __init__(self):
+	def __init__(self,domain):
 
+		self.domain = domain
 		self.session_id = str(uuid4())
 		self.session = requests.Session()
 
@@ -19,9 +19,12 @@ class SessionManager:
 	def clear(self):
 		self.session.cookies.clear()
 
+	def get_domain(self):
+		return self.domain
+
 	def is_authenticated(self) -> dict:
 
-		PROTECTED_URL = settings.base_url.rstrip("/") + settings.protected_path
+		PROTECTED_URL = self.domain + "/panel/company/report"
 		try:
 			response = self.session.get(PROTECTED_URL, timeout=10)
 		except Exception:

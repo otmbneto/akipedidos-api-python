@@ -1,17 +1,20 @@
 from typing import List, Dict, Optional
 from bs4 import BeautifulSoup
-from ..core.config import settings
 
 class CategoryService:
 	
 	def __init__(self, session_manager):
 		
 		self.session_manager = session_manager
-		self.panel_url = settings.base_url + "/panel/company/category"
-		self.register_url = settings.base_url + "/util/company/registercategory"
-		self.edit_url = settings.base_url + "/util/company/editcategory"
-		self.remove_url = settings.base_url + "/util/company/removecategory"
-		self.hide_url = settings.base_url + "/util/company/setcategoryhidden"
+		self._set_service_routes(session_manager.get_domain())
+
+	def _set_service_routes(self,domain):
+
+		self.panel_url = domain + "/panel/company/category"
+		self.register_url = domain + "/util/company/registercategory"
+		self.edit_url = domain + "/util/company/editcategory"
+		self.remove_url = domain + "/util/company/removecategory"
+		self.hide_url = domain + "/util/company/setcategoryhidden"
 
 	def extract_csrf(self,html):
 	    soup = BeautifulSoup(html, "html.parser")

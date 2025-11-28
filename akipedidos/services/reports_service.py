@@ -1,14 +1,17 @@
 from typing import List, Dict, Optional
 from bs4 import BeautifulSoup
-from ..core.config import settings
 
 class ReportsService:
 
     def __init__(self,session_manager):
 
         self.session_manager = session_manager
-        self.panel_url = settings.base_url.rstrip('/') + "/panel/company/report"
-        self.order_url =  settings.base_url.rstrip('/') + "/util/company/getordersreport"
+        self._set_service_routes(session_manager.get_domain())
+
+    def _set_service_routes(self,domain):
+
+        self.panel_url = domain.rstrip('/') + "/panel/company/report"
+        self.order_url =  domain.rstrip('/') + "/util/company/getordersreport"
 
     def extract_csrf(self,html):
         soup = BeautifulSoup(html, "html.parser")
