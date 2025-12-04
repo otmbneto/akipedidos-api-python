@@ -1,6 +1,6 @@
 from .service import Service
 from bs4 import BeautifulSoup
-import json
+from ..models.hours import Shift,Hours
 
 class StoreService(Service):
 
@@ -140,75 +140,8 @@ class StoreService(Service):
 			}
 
 		if len(hours) == 0:
-			hours = [{
-						"switch_sun":1,
-						"sun_i":"08:00",
-						"sun_u":"12:00",
-						"switch_mon":1,
-						"mon_i":"08:00",
-						"mon_u":"12:00",
-						"switch_tue":1,
-						"tue_i":"08:00",
-						"tue_u":"12:00",
-						"switch_wed":1,
-						"wed_i":"08:00",
-						"wed_u":"12:00",
-						"switch_thu":1,
-						"thu_i":"08:00",
-						"thu_u":"12:00",
-						"switch_fri":1,
-						"fri_i":"08:00",
-						"fri_u":"12:00",
-						"switch_sat":1,
-						"sat_i":"08:00",
-						"sat_u":"12:00"
-					},
-					{
-						"switch_sun":1,
-						"sun_i":"14:00",
-						"sun_u":"18:00",
-						"switch_mon":1,
-						"mon_i":"14:00",
-						"mon_u":"18:00",
-						"switch_tue":1,
-						"tue_i":"14:00",
-						"tue_u":"18:00",
-						"switch_wed":1,
-						"wed_i":"14:00",
-						"wed_u":"18:00",
-						"switch_thu":1,
-						"thu_i":"14:00",
-						"thu_u":"18:00",
-						"switch_fri":1,
-						"fri_i":"14:00",
-						"fri_u":"18:00",
-						"switch_sat":1,
-						"sat_i":"14:00",
-						"sat_u":"18:00"
-					},
-					{
-						"switch_sun":0,
-						"sun_i":"00:00:00",
-						"sun_u":"00:00:00",
-						"switch_mon":0,
-						"mon_i":"00:00",
-						"mon_u":"00:00",
-						"switch_tue":0,
-						"tue_i":"00:00",
-						"tue_u":"00:00",
-						"switch_wed":0,
-						"wed_i":"00:00:00",
-						"wed_u":"00:00:00",
-						"switch_thu":0,
-						"thu_i":"00:00:00",
-						"thu_u":"00:00:00",
-						"switch_fri":0,
-						"fri_i":"00:00",
-						"fri_u":"00:00",
-						"switch_sat":0,
-						"sat_i":"00:00:00",
-						"sat_u":"00:00:00"
-					}]
+			hours = Hours([Shift([(True, "08:00", "12:00") for _ in range(7)]), Shift(), Shift()])
+
 		data = {
 			"action": "saveData",
 			"name": name,
@@ -303,14 +236,12 @@ class StoreService(Service):
 			"custom_status_messages_delivered": custom_status_messages_delivered,
 			"custom_messages_api_notify_inactive_customers": custom_messages_api_notify_inactive_customers,
 			"segments": segments,
-			"hours": json.dumps(hours),
+			"hours": str(hours),
 			"img_form": img_form,
 			"switch_img_form_item": switch_img_form_item,
 		}
 
 		headers = {"X-CSRF-TOKEN": csrf}
-		print("FINAL DATA:", data)
-		print("HEADERS:", headers)
 		response = self.session.post(self.edit_url, data=data,headers = headers,timeout=15)
 		response.raise_for_status()
 		try:
