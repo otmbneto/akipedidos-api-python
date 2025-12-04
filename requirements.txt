@@ -3,3 +3,6 @@ beautifulsoup4
 python-multipart
 pydantic
 pydantic_settings
+fastapi
+uvicorn
+lxml

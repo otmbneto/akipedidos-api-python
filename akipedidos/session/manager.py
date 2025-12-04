@@ -8,13 +8,20 @@ class SessionManager:
 
 		self.domain = domain
 		self.session_id = str(uuid4())
+		self.sessions = {}
 		self.session = requests.Session()
 
-	def get_session(self):
-		return self.session
+	def create_session(self):
 
-	def get_session_id(self):
-		return session_id
+		new_id = str(uuid4())
+		new_session = requests.Session()
+		self.sessions[new_id] = new_session
+
+		return new_id
+
+	def get_session(self,session_id):
+
+		return self.sessions[session_id] if session_id in self.sessions else None
 
 	def clear(self):
 		self.session.cookies.clear()
@@ -22,11 +29,16 @@ class SessionManager:
 	def get_domain(self):
 		return self.domain
 
-	def is_authenticated(self) -> dict:
+	def is_authenticated(self,session_id):
+
+		session = self.get_session(session_id)
+		if session is None:
+			return {"valid":False,
+					"reason": "Session id not valid"}
 
 		PROTECTED_URL = self.domain + "/panel/company/report"
 		try:
-			response = self.session.get(PROTECTED_URL, timeout=10)
+			response = session.get(PROTECTED_URL, timeout=10)
 		except Exception:
 			return {"valid": False, "reason": "Request failed"}
 
