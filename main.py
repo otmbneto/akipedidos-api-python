@@ -1,24 +1,17 @@
 from fastapi import FastAPI
 from akipedidos.client import AkiPedidosClient
+from routers import auth,items,categories
 
-app = FastAPI(title="Proxy API for Online Service")
+# -----------------------------
+# FastAPI Application
+# -----------------------------
 
-client = AkiPedidosClient("https://pedlog.com/")
+app = FastAPI(
+    title="AkiPedidos Web API",
+    description="FastAPI wrapper around the internal AkiPedidos scraping client.",
+    version="1.0.0",
+)
 
-@app.post("/auth/login")
-def login(username: str, password: str):
-
-	session_id = client.session_manager.create_session()
-	auth = client.get_auth(session_id)
-	if(auth.login(username, password)):
-
-		return {"status": "ok", "session_id": session_id}
-	else:
-		return{"status": "Failed"}
-
-@app.get("/categories/list")
-def get_categories(session_id):
-    
-    service = client.get_categories(session_id)
-    result = service.list()
-    return {"status": "ok","value": result}
+app.include_router(auth.router)
+app.include_router(items.router)
+app.include_router(categories.router)
