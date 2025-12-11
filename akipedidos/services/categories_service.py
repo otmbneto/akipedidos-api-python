@@ -17,11 +17,15 @@ class CategoryService(Service):
 
 	def list(self):
 		
+		categories = []
+		if self.session is None:
+			print("ERROR: Session not found!")
+			return categories
+
 		response = self.session.get(self.panel_url, timeout=10)
 		response.raise_for_status()
 		soup = BeautifulSoup(response.text, "html.parser")
 		spans = soup.find_all("span")
-		categories = []
 		if spans:
 			for span in spans:
 				if "id" in span.attrs and span["id"].startswith("strongAdditionalCategory_"):
@@ -45,6 +49,10 @@ class CategoryService(Service):
 
 	def create(self, name: str, position: int = 0, type_icon: str = "0", icon: str = "fa-tags", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
 		
+		if self.session is None:
+			print("ERROR: Session not found!")
+			return {'raw': "session error"}
+
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
@@ -76,6 +84,10 @@ class CategoryService(Service):
 
 	def edit(self,category_id: int,name: str="",position: int = 0, type_icon: str = "0", icon: str = "", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
 		
+		if self.session is None:
+			print("ERROR: Session not found!")
+			return {'raw': "session error"}
+			
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			raise RuntimeError('CSRF token not found')
@@ -125,7 +137,7 @@ class CategoryService(Service):
 		except Exception:
 			return {'raw': response.text}
 
-	def hide(self,category_id: int,hidden: int):
+	def hide(self,category_id: int,hidden: bool):
 	
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
@@ -135,13 +147,12 @@ class CategoryService(Service):
 			'action': 'setCategoryHidden',
 			'id': category_id,
 			'_token': csrf,
-			'hidden': hidden,
+			'hidden': "1" if hidden else "0",
 		}
 
 		response = self.session.post(self.hide_url, data=data, timeout=15)
-		response.raise_for_status()
 		try:
 			return response.json()
-		except Exception:
-			return {'raw': response.text}
+		except Exception as e:
+			return {'exception':e,'raw': response.text}
 

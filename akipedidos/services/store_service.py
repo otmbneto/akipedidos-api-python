@@ -4,9 +4,9 @@ from ..models.hours import Shift,Hours
 
 class StoreService(Service):
 
-	def __init__(self,session_manager):
+	def __init__(self,session_manager,domain):
 
-		super().__init__(session_manager) 
+		super().__init__(session_manager,domain) 
 
 	def _set_service_routes(self,domain):
 

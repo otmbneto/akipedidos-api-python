@@ -3,9 +3,9 @@ from bs4 import BeautifulSoup
 
 class ItemsService(Service):
 
-	def __init__(self,session_manager):
+	def __init__(self,session_manager,domain):
 
-		super().__init__(session_manager)
+		super().__init__(session_manager,domain)
 
 	def _set_service_routes(self,domain):
 
@@ -231,7 +231,7 @@ class ItemsService(Service):
 		except Exception:
 			return {'raw': response.text}
 
-	def hide(self,item_id:int,hidden):
+	def hide(self,item_id:int,hidden:bool):
 
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
@@ -250,5 +250,3 @@ class ItemsService(Service):
 			return response.json()
 		except Exception:
 			return {'raw': response.text}
-
-		return

@@ -7,9 +7,7 @@ class SessionManager:
 	def __init__(self,domain):
 
 		self.domain = domain
-		self.session_id = str(uuid4())
 		self.sessions = {}
-		self.session = requests.Session()
 
 	def create_session(self):
 
@@ -20,11 +18,15 @@ class SessionManager:
 		return new_id
 
 	def get_session(self,session_id):
+		print("\n--- SESSION DEBUG ---")
+		print("Current sessions:", self.sessions.keys())
+		print("Requested session:", session_id)
+		print("---------------------\n")
+		return self.sessions[session_id] if session_id in self.sessions.keys() else None
 
-		return self.sessions[session_id] if session_id in self.sessions else None
-
-	def clear(self):
-		self.session.cookies.clear()
+	def delete_session(self,session_id):
+		if session_id in self.sessions.keys():
+			del self.sessions[session_id]
 
 	def get_domain(self):
 		return self.domain
@@ -57,7 +59,7 @@ class SessionManager:
 		return {
 			"valid": True,
 			"details": {
-				"url": resp.url,
+				"url": response.url,
 				"title": soup.title.string if soup.title else "No title"
 			}
 		}
