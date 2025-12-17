@@ -16,10 +16,22 @@ class Service:
 		self.session = session
 		self._set_service_routes(domain)
 
-	def extract_csrf(self,html):
-		soup = BeautifulSoup(html, "html.parser")
-		tag = soup.find("meta", {"name": "csrf-token"})
-		return tag["content"] if tag else None
+
+	def extract_csrf(self, html):
+	    soup = BeautifulSoup(html, "html.parser")
+
+	    # Meta tag (authenticated pages)
+	    meta = soup.find("meta", {"name": "csrf-token"})
+	    if meta and meta.get("content"):
+	        return meta["content"]
+
+	    # Input fallback (login page)
+	    inp = soup.find("input", {"name": "_token"})
+	    if inp and inp.get("value"):
+	        return inp["value"]
+
+	    return None
+
 
 	def get_csrf(self,url,timeout = 10):
 
