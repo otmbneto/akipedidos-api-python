@@ -16,7 +16,10 @@ class Auth(Service):
 
 		login_page = self.login_adm if str(selectUserType) == "4" else self.login_url
 
+		print("Login page:" + login_page)
+
 		token = self.get_csrf(login_page)
+		print("token: " + str(token))
 		if not token:
 			raise RuntimeError('CSRF token not found')
 
@@ -30,6 +33,7 @@ class Auth(Service):
 		post = self.session.post(
 			login_page,
 			data=data,
+			allow_redirects=True,
 			timeout=15,
 		)
 

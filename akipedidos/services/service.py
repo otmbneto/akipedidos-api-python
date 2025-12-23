@@ -22,6 +22,7 @@ class Service:
 
 	    # Meta tag (authenticated pages)
 	    meta = soup.find("meta", {"name": "csrf-token"})
+	    print(meta)
 	    if meta and meta.get("content"):
 	        return meta["content"]
 
