@@ -86,27 +86,27 @@ class AkiPedidosClient:
 
     #-------------------------------------REPORT--------------------------------------------
 
-    def get_items_reports(self,session_id,start_date,end_date,show_all_items = False):
+    def get_items_report(self,session_id,start_date,end_date,show_all_items = False):
 
         service = ReportsService(self.session_manager.get_session(session_id),self.domain)
-        return service.get_item_reports(start_date,end_date,show_all_items = show_all_items)
+        return service.get_item_report(start_date,end_date,show_all_items = show_all_items)
 
-    def get_orders_report(self,session_id,date_initial,date_final):
+    def get_orders_report(self,session_id,start_date,end_date):
 
         service = ReportsService(self.session_manager.get_session(session_id),self.domain)
-        return service.get_orders_reports(start_date,end_date)
+        return service.get_orders_report(start_date,end_date)
     
-    def get_additional_report(self,session_id,date_initial,date_final,show_all_additionals = False):
+    def get_additionals_report(self,session_id,start_date,end_date,show_all_additionals = False):
 
         service = ReportsService(self.session_manager.get_session(session_id),self.domain)
         return service.get_additional_report(start_date,end_date,show_all_additionals = show_all_additionals)
 
-    def get_cash_drawer_report(self,session_id,date_initial,date_final):
+    def get_cash_drawer_report(self,session_id,start_date,end_date):
 
         service = ReportsService(self.session_manager.get_session(session_id),self.domain)
         return service.get_cash_drawer_report(start_date,end_date)
 
-    def get_deliveryman_report(self,session_id,date_initial,date_final):
+    def get_deliverymen_report(self,session_id,start_date,end_date):
 
         service = ReportsService(self.session_manager.get_session(session_id),self.domain)
         return service.get_deliveryman_report(start_date,end_date)

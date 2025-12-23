@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from akipedidos.client import AkiPedidosClient
-from routers import auth,items,categories
+from fastapi.middleware.cors import CORSMiddleware
+from routers import auth,items,categories,reports
 
 # -----------------------------
 # FastAPI Application
@@ -23,3 +23,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(items.router)
 app.include_router(categories.router)
+app.include_router(reports.router)
