@@ -10,9 +10,9 @@ class DayHours:
 
     def to_dict(self, day_name):
         return {
-            f"switch_{day_name}": 1 if self.enabled else 0,
-            f"{day_name}_i": self.open_time if self.enabled else "00:00",
-            f"{day_name}_u": self.close_time if self.enabled else "00:00",
+            f"switch_hours_{day_name}": 1 if self.enabled else 0,
+            f"hours_{day_name}_i": self.open_time if self.enabled else "00:00",
+            f"hours_{day_name}_u": self.close_time if self.enabled else "00:00",
         }
 
 
