@@ -1,5 +1,6 @@
 from .service import Service
 from bs4 import BeautifulSoup
+from ..models.hours import Shift,Hours
 
 class ItemsService(Service):
 
@@ -23,32 +24,33 @@ class ItemsService(Service):
 		if not csrf:
 			return {"items": [], "error": "CSRF token not found"}
 
-		data = {
-			"_token": csrf,
-			"action": "getItemsFromCategory",
-			"page": "myitems",
-			"search_item": "-1"
-		}
-
+		items_list = []
 		for category in categories:
 
-			data["category_id"] = category["id"]
+			data = {
+				"_token": csrf,
+				"action": "getItemsFromCategory",
+				"page": "myitems",
+				"category_id": category["id"],
+				"search_item": "-1"
+			}
 
-		response = self.session.post(
-							self.get_url,
-							data=data,
-							timeout=10
-				)			
+			response = self.session.post(
+								self.get_url,
+								data=data,
+								timeout=10
+					)			
 
-		response.raise_for_status()
-		data = response.json()
-		items = []
-		if data.get("success") == "true":
-			items = data.get("items", [])
-			for item in items:
-				item["category_name"] = category["name"]
+			response.raise_for_status()
+			data = response.json()
+			items = []
+			if data.get("success") == "true":
+				items = data.get("items", [])
+				for item in items:
+					item["category_name"] = category["name"]
+				items_list += items
 
-		return items
+		return items_list
 
 	def create(	self,
 			    category: str,
@@ -85,6 +87,10 @@ class ItemsService(Service):
 		if days is None:
 			days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
 
+
+		if len(hours_json) == 0:
+			print("hours are empty. creating default")
+			hours_json = Hours([Shift([(True, "08:00", "12:00") for _ in range(7)]), Shift(), Shift()])
 
 	    # base payload EXACTLY like Chrome sends
 		data = {
