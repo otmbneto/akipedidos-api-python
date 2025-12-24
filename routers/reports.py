@@ -22,7 +22,7 @@ def get_items_report(payload: dict,
 def get_additionals_report(payload: dict,
                            client: AkiPedidosClient = Depends(get_client),
                            session_id: str = Depends(get_session_id)):
-    return client.get_additionals_report(session_id,payload["start_date"],payload["end_date"],show_all_additionals = payload["show_all_items"])
+    return client.get_additionals_report(session_id,payload["start_date"],payload["end_date"],show_all_additionals = payload["show_all_additionals"])
 
 @router.post("/cashdrawer", tags=["Reports"])
 def get_cash_drawer_report(payload: dict,
