@@ -22,7 +22,7 @@ def create_item(
     result = client.create_item(session_id,payload)
     return {"status": "ok", "result": result}
 
-@router.post("/edit/{item_id}", tags=["Items"])
+@router.post("/edit", tags=["Items"])
 def edit_item(
     payload: dict,
     client: AkiPedidosClient = Depends(get_client),
@@ -31,22 +31,20 @@ def edit_item(
     result = client.edit_item(session_id,payload)
     return {"status": "ok", "result": result}
 
-@router.post("/delete/{item_id}", tags=["Items"])
+@router.post("/delete", tags=["Items"])
 def delete_item(
-    item_id: int,
+    payload: dict,
     client: AkiPedidosClient = Depends(get_client),
     session_id: str = Depends(get_session_id),
 ):
-    result = client.delete_item(session_id,item_id)
+    result = client.delete_item(session_id,payload["item_id"])
     return {"status": "ok", "result": result}
 
-@router.post("/hide/{item_id}", tags=["Items"])
+@router.post("/hide", tags=["Items"])
 def hide_item(
-    item_id: int,
+    payload: dict,
     client: AkiPedidosClient = Depends(get_client),
     session_id: str = Depends(get_session_id),
-    hidden: bool = Form(False),
 ):
-    print("HIDDEN VALUE: " + str(hidden))
-    result = client.hide_item(session_id,item_id,hidden)
+    result = client.hide_item(session_id,payload["item_id"],payload["hidden"])
     return {"status": "ok", "result": result}
