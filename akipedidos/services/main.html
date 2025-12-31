@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Documentação da Web API AkiPedidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --code: #020617;
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 32px;
+      background: linear-gradient(135deg, #020617, #020617);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      color: var(--muted);
+      max-width: 800px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 32px;
+    }
+
+    section {
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+      margin-top: 0;
+    }
+
+    h3 {
+      margin-top: 32px;
+      color: #a7f3d0;
+    }
+
+    .endpoint {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .method {
+      font-weight: bold;
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-right: 8px;
+      font-size: 13px;
+    }
+
+    .get { background: #1d4ed8; }
+    .post { background: #047857; }
+
+    .path {
+      font-family: monospace;
+      color: #93c5fd;
+    }
+
+    pre {
+      background: var(--code);
+      padding: 16px;
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .note {
+      background: #020617;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      color: #fde68a;
+      margin-top: 12px;
+    }
+
+    footer {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .api-tabs {
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      background: #020617;
+    }
+
+    .api-tablist {
+      display: flex;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .api-tablist button {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+
+    .api-tablist button.active {
+      color: #22c55e;
+      border-bottom: 2px solid #22c55e;
+    }
+
+    .api-tabpanels pre {
+      display: none;
+      padding: 16px;
+      margin: 0;
+      color: #e5e7eb;
+      background: #020617;
+    }
+
+    .api-tabpanels pre.active {
+      display: block;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Web API AkiPedidos</h1>
+  <p>
+    Web API baseada em sessão que expõe funcionalidades do AkiPedidos/Pedlog
+    através de endpoints HTTP. Todas as requisições exigem uma sessão válida.
+  </p>
+</header>
+
+<main>
+  <section>
+    <h2>Autenticação</h2>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/auth/login</span>
+      <p>Autentica um usuário e cria uma sessão.</p>
+      <pre>
+{
+  "email": "usuario@email.com",
+  "password": "1234"
+}
+      </pre>
+
+      <div class="note">
+        A resposta inclui um <strong>session_id</strong>.
+        Ele deve ser enviado nas próximas requisições via header.
+        <pre>
+{
+  "accept": "application/json",
+  "X-Session-Id": "uuid-session-id"
+}
+        </pre>
+      </div>
+    </div>
+    <h2>Exemplos de uso</h2>
+    <div class="api-tabs" data-scope="login">
+      <div class="api-tablist" role="tablist">
+        <button role="tab" data-lang="curl">cURL</button>
+        <button role="tab" data-lang="python">Python</button>
+      </div>
+
+      <div class="api-tabpanels">
+        <pre role="tabpanel" data-lang="curl">
+curl -X POST http://api.pedlog.com/auth/login -H "Content-Type: application/json" -d "{\"email\":\"user@email.com\",\"password\":\"12345678\"}" --ssl-no-revoke
+        </pre>
+
+        <pre role="tabpanel" data-lang="python">
+    import requests
+    requests.post("https://api.pedlog.com/auth/login", data={
+      "email": "user@email.com",
+      "password": "12345678"
+    })
+        </pre>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>Categorias</h2>
+
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <span class="path">/categories/list</span>
+      <p>Lista todas as categorias.</p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/categories/create</span>
+      <p>Cria uma nova categoria.</p>
+      <pre>
+{
+}
+      </pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/categories/edit</span>
+      <pre>
+{
+  "id": 10,
+  "name": "Lanches",
+  "order": 2
+}
+      </pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/categories/delete</span>
+      <pre>
+{
+  "category_id": 10
+}
+      </pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Itens</h2>
+
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <span class="path">/items/list</span>
+      <p>Lista todos os itens.</p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/items/create</span>
+      <pre>
+{
+  "category": "117",
+  "name": "Processador Core i7",
+  "external_code": "123",
+  "ncm_code": "220122000",
+  "description": "Processador Intel de 4 núcleos",
+  "price": "300.00",
+  "price_cost": "",
+  "free_shipping": "0",
+  "is_unavailable_delivery": "0",
+  "switch_offer": "0",
+  "price_offer": "",
+  "item_type": "0",
+  "price_type": "0",
+  "amount": "-1",
+  "unit_measure_type": "0",
+  "preparation_time": "-1",
+  "serve_people_amount": "-1",
+  "flavor_amount_min": "0",
+  "flavor_amount": "0",
+  "days": {
+    "sun": true,
+    "mon": true,
+    "tue": true,
+    "wed": true,
+    "thu": true,
+    "fri": true,
+    "sat": true
+  },
+  "switch_slide": "0",
+  "hours_json": ""
+}
+      </pre>
+    </div>
+    <h2>Exemplos de uso</h2>
+    <div class="api-tabs" data-scope="login">
+      <div class="api-tablist" role="tablist">
+        <button role="tab" data-lang="curl">cURL</button>
+        <button role="tab" data-lang="python">Python</button>
+      </div>
+
+      <div class="api-tabpanels">
+        <pre role="tabpanel" class="active" data-lang="curl">
+    curl -X POST https://api.example.com/items/create \
+      -H "Accept: application/json" \
+      -H "X-Session-Id: YOUR_SESSION_ID" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "category": "117",
+        "name": "Processador Core i7",
+        "external_code": "123",
+        "ncm_code": "220122000",
+        "description": "Processador Intel de 4 núcleos",
+        "price": "300.00",
+        "price_cost": "",
+        "free_shipping": "0",
+        "is_unavailable_delivery": "0",
+        "switch_offer": "0",
+        "price_offer": "",
+        "item_type": "0",
+        "price_type": "0",
+        "amount": "-1",
+        "unit_measure_type": "0",
+        "preparation_time": "-1",
+        "serve_people_amount": "-1",
+        "flavor_amount_min": "0",
+        "flavor_amount": "0",
+        "days": {
+          "sun": true,
+          "mon": true,
+          "tue": true,
+          "wed": true,
+          "thu": true,
+          "fri": true,
+          "sat": true
+        },
+        "switch_slide": "0",
+        "hours_json": ""
+      }'
+        </pre>
+
+        <pre role="tabpanel" data-lang="python">
+    import requests
+    import json
+
+    url = "https://api.pedlog.com/items/create"
+    headers = {
+        "Accept": "application/json",
+        "X-Session-Id": "YOUR_SESSION_ID"
+    }
+
+    payload = {
+        "category": "117",
+        "name": "Processador Core i7",
+        "external_code": "123",
+        "ncm_code": "220122000",
+        "description": "Processador Intel de 4 núcleos",
+        "price": "300.00",
+        "price_cost": "",
+        "free_shipping": "0",
+        "is_unavailable_delivery": "0",
+        "switch_offer": "0",
+        "price_offer": "",
+        "item_type": "0",
+        "price_type": "0",
+        "amount": "-1",
+        "unit_measure_type": "0",
+        "preparation_time": "-1",
+        "serve_people_amount": "-1",
+        "flavor_amount_min": "0",
+        "flavor_amount": "0",
+        "days": {
+          "sun": True,
+          "mon": True,
+          "tue": True,
+          "wed": True,
+          "thu": True,
+          "fri": True,
+          "sat": True
+        },
+        "switch_slide": "0",
+        "hours_json": ""
+        }
+    }
+
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    print(response.json())
+        </pre>
+      </div>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/items/edit</span>
+      <pre>
+{
+  "item_id": 330,
+  "name": "Pizza Calabresa Especial"
+}
+      </pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/items/delete</span>
+      <pre>
+{
+  "item_id": 330
+}
+      </pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/items/hide</span>
+      <pre>
+{
+  "item_id": 330,
+  "hidden": 1
+}
+      </pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Relatórios</h2>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/reports/orders</span>
+      <pre>
+{
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-31"
+}
+      </pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/reports/items</span>
+      <pre>
+{
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-31",
+  "show_all_items": true
+}
+      </pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="path">/reports/cashdrawer</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Web API AkiPedidos · Baseada em Sessão · FastAPI
+</footer>
+
+</body>
+
+<script>
+(function () {
+
+  document.querySelectorAll(".api-tabs").forEach(tabs => {
+    const buttons = tabs.querySelectorAll("[role=tab]");
+    const panels = tabs.querySelectorAll("[role=tabpanel]");
+
+    function activate(lang) {
+      buttons.forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+      panels.forEach(p => p.classList.toggle("active", p.dataset.lang === lang));
+    }
+
+    buttons.forEach(btn => {
+      btn.onclick = () => activate(btn.dataset.lang);
+    });
+
+    activate("curl");
+  });
+})();
+</script>
+
+</html>
