@@ -34,3 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent
 def root():
     html_path = BASE_DIR / "static" / "index.html"
     return html_path.read_text(encoding="utf-8")
+
+@app.head("/", include_in_schema=False)
+def root_head():
+    return
