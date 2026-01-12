@@ -74,25 +74,23 @@ class ItemsService(Service):
 			    flavor_amount: str = "0",
 			    days: dict = None,
 			    switch_slide: str = "0",
-			    slide_item: list = None,
+			    slide_items: list = [],
 			    hours_json: str = "",
+			    img = None,
 			):
 
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			return {"error": "CSRF token not found"}
 
-
 		# default days
 		if days is None:
 			days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
 
-
 		if len(hours_json) == 0:
 			print("hours are empty. creating default")
-			hours_json = Hours([Shift([(True, "08:00", "12:00") for _ in range(7)]), Shift(), Shift()])
+			hours_json = Hours([Shift([(True, "00:00", "23:59") for _ in range(7)]), Shift(), Shift()])
 
-	    # base payload EXACTLY like Chrome sends
 		data = {
 	        "action": "registerItem",
 	        "category": category,
@@ -115,20 +113,39 @@ class ItemsService(Service):
 	        "flavor_amount_min": flavor_amount_min,
 	        "flavor_amount": flavor_amount,
 	        "switch_slide": switch_slide,
-	        "hours": hours_json,
+	        "hours": str(hours_json),
 	    }
 
 		days = days or {}
 		for d in ['sun','mon','tue','wed','thu','fri','sat']:
 			data[d] = '1' if days.get(d) else '0'
 
+		files = None
+		if img:
+			files = {
+				"img": (
+					img.filename,
+					img.file,
+					img.content_type or "application/octet-stream"
+				)
+			}
+
 		# Insert slide items
-		if slide_item:
-			for i, slide in enumerate(slide_item):
-				data[f"slide_item_{i}"] = slide
+		if switch_slide == "1":
+			
+			if files is None:
+				files = {}
+
+			for i, slide in enumerate(slide_items):
+				files[f"slide_item_{i}"] = (
+											slide.filename,
+											slide.file,
+											slide.content_type or "application/octet-stream"
+										  )
+
 
 		headers = {"X-CSRF-TOKEN": csrf}
-		response = self.session.post(self.register_url, data=data, headers=headers)
+		response = self.session.post(self.register_url, data=data, files=files,headers=headers)
 		try:
 			resp.raise_for_status()
 			return resp.json()

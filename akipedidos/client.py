@@ -30,7 +30,6 @@ class AkiPedidosClient:
     #----------------------------------CATAGORIES------------------------------------------
     def create_category(self,session_id,payload):
 
-        print(self.session_manager.sessions)
         service = CategoryService(self.session_manager.get_session(session_id),self.domain)
         return service.create(**payload)
 

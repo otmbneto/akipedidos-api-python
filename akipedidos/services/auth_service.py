@@ -15,11 +15,7 @@ class Auth(Service):
 	def login(self, email: str, password: str, selectUserType = "0"):
 
 		login_page = self.login_adm if str(selectUserType) == "4" else self.login_url
-
-		print("Login page:" + login_page)
-
 		token = self.get_csrf(login_page)
-		print("token: " + str(token))
 		if not token:
 			raise RuntimeError('CSRF token not found')
 
@@ -39,4 +35,4 @@ class Auth(Service):
 
 		post.raise_for_status()
 
-		return True
+		return post.text
