@@ -315,7 +315,7 @@ curl -X POST http://api.pedlog.com/auth/login -H "Content-Type: application/json
       -H "Accept: application/json" \
       -H "X-Session-Id: YOUR_SESSION_ID" \
       -H "Content-Type: application/json" \
-      -d '{
+      -F '{
         "category": "117",
         "name": "Processador Core i7",
         "external_code": "123",
@@ -393,7 +393,11 @@ curl -X POST http://api.pedlog.com/auth/login -H "Content-Type: application/json
         }
     }
 
-    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    files = {
+        "payload": (None, json.dumps(payload), "application/json")
+    }
+
+    response = requests.post(url, files=payload, headers=headers)
     print(response.json())
         </pre>
       </div>
