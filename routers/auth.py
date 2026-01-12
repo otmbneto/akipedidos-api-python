@@ -17,7 +17,7 @@ def login(
     if session_id is None:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return {"result": result, "session_id": session_id}
+    return {"success": result, "session_id": session_id if result else None}
 
 
 @router.post("/logout")

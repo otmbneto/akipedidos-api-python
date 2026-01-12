@@ -12,6 +12,21 @@ class Auth(Service):
 		self.login_url = domain + "/panel/company"
 		self.login_adm = domain + "/panel/admin/login"
 
+	def extract_login_error(self,html):
+	    match = re.search(r"alertMessage\('modalAlert','([^']+)'", html)
+	    return match.group(1) if match else None
+
+	def login_successful(self,response):
+
+	    soup = BeautifulSoup(response.text, "html.parser")
+	    has_email = soup.find("input", {"name": "email"})
+	    has_password = soup.find("input", {"name": "password"})
+
+	    if has_email or has_password:
+	        return False
+
+	    return True
+
 	def login(self, email: str, password: str, selectUserType = "0"):
 
 		login_page = self.login_adm if str(selectUserType) == "4" else self.login_url
@@ -35,4 +50,4 @@ class Auth(Service):
 
 		post.raise_for_status()
 
-		return post.text
+		return self.login_successful(post)
