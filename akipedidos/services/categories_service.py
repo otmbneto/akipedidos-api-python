@@ -47,7 +47,14 @@ class CategoryService(Service):
 
 		return categories
 
-	def create(self, name: str, position: int = 0, type_icon: str = "0", icon: str = "fa-tags", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
+	def create(self, 
+				name: str, 
+				position: int = 0, 
+				type_icon: str = "0", 
+				icon: str = "fa-tags", 
+				icon_name: str = "", 
+				days: dict = {"sun": True, "mon": True, "tue": True, "wed": True, "thu": True, "fri": True, "sat": True}, 
+				img=None):
 		
 		if self.session is None:
 			print("ERROR: Session not found!")
@@ -66,13 +73,18 @@ class CategoryService(Service):
 			'icon_name': icon_name,
 		}
 
-		days = days or {}
-		for d in ['sun','mon','tue','wed','thu','fri','sat']:
-			data[d] = '1' if days.get(d) else '0'
+		for k,v in days.items():
+			data[k] = '1' if v else '0'
 
 		files = None
-		if icon_file:
-			files = {'icon_img': (icon_file.filename, icon_file.file, icon_file.content_type)}
+		if img:
+			files = {
+				'icon_img': (
+					img.filename,
+					img.file,
+					img.content_type or "application/octet-stream"
+					)
+				}
 
 		headers = {'X-CSRF-TOKEN': csrf}
 		response = self.session.post(self.register_url, data=data, files=files, headers=headers, timeout=15)
@@ -82,8 +94,16 @@ class CategoryService(Service):
 		except Exception:
 			return {'raw': response.text}
 
-	def edit(self,category_id: int,name: str="",position: int = 0, type_icon: str = "0", icon: str = "", icon_name: str = "", days: dict = {'sun':'0','mon':'0','tue':'0','wed':'0','thu':'0','fri':'0','sat':'0'}, icon_file=None):
-		
+	def edit(self,
+				category_id: int,
+				name: str, 
+				position: int = 0, 
+				type_icon: str = "0", 
+				icon: str = "fa-tags", 
+				icon_name: str = "", 
+				days: dict = {"sun": True, "mon": True, "tue": True, "wed": True, "thu": True, "fri": True, "sat": True}, 
+				img=None):
+
 		if self.session is None:
 			print("ERROR: Session not found!")
 			return {'raw': "session error"}
@@ -102,13 +122,18 @@ class CategoryService(Service):
 			'icon_name': icon_name,
 		}
 
-		days = days or {}
-		for d in ['sun','mon','tue','wed','thu','fri','sat']:
-			data[d] = '1' if days.get(d) else '0'
+		for k,v in days.items():
+			data[k] = '1' if v else '0'
 
 		files = None
-		if icon_file:
-			files = {'icon_img': (icon_file.filename, icon_file.file, icon_file.content_type)}
+		if img:
+			files = {
+				'icon_img': (
+					img.filename,
+					img.file,
+					img.content_type or "application/octet-stream"
+					)
+				}
 
 		headers = {'X-CSRF-TOKEN': csrf}
 		response = self.session.post(self.edit_url, data=data, files=files, headers=headers, timeout=15)

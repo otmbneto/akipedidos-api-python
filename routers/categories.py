@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException,Form
+import json
+from fastapi import APIRouter, Depends, HTTPException,Form,UploadFile,File
 from pydantic import BaseModel
 from akipedidos.client import AkiPedidosClient
 from dependencies import get_client,get_session_id
@@ -15,11 +16,17 @@ def list_categories(
 
 @router.post("/create", tags=["Categories"])
 def create_category(
-    payload: dict,
+    payload: str = Form(...),
+    img: UploadFile | None = File(None),
     client: AkiPedidosClient = Depends(get_client),
     session_id: str = Depends(get_session_id),
 ):
-    result = client.create_category(session_id,payload)
+
+    data = json.loads(payload)
+    if img is not None:
+        data["img"] = img
+
+    result = client.create_category(session_id,data)
     return {"status": "ok", "result": result}
 
 @router.post("/edit", tags=["Categories"])
