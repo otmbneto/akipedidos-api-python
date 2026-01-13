@@ -182,9 +182,10 @@
         A resposta inclui um <strong>session_id</strong>.
         Ele deve ser enviado nas próximas requisições via header.
         <pre>
+
 {
-  "accept": "application/json",
-  "X-Session-Id": "uuid-session-id"
+  "success":true,
+  "session_id":"YOUR-SESSION-ID"
 }
         </pre>
       </div>
@@ -194,6 +195,7 @@
       <div class="api-tablist" role="tablist">
         <button role="tab" data-lang="curl">cURL</button>
         <button role="tab" data-lang="python">Python</button>
+        <button role="tab" data-lang="php">PHP</button>
       </div>
 
       <div class="api-tabpanels">
@@ -208,6 +210,37 @@ curl -X POST http://api.pedlog.com/auth/login -H "Content-Type: application/json
       "password": "12345678"
     })
         </pre>
+        <pre role="tabpanel" data-lang="php">
+
+$url = "http://api.pedlog.com/auth/login";
+
+$data = [
+    "email" => "usuario@email.com",
+    "password" => "1234"
+];
+
+$ch = curl_init($url);
+
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => [
+        "Content-Type: application/json"
+    ],
+    CURLOPT_POSTFIELDS => json_encode($data),
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_SSL_VERIFYHOST => false,
+]);
+
+$response = curl_exec($ch);
+
+if ($response === false) {
+    echo "cURL error: " . curl_error($ch);
+} else {
+    echo $response;
+}
+
+        </pre>
       </div>
     </div>
 
@@ -220,6 +253,43 @@ curl -X POST http://api.pedlog.com/auth/login -H "Content-Type: application/json
       <span class="method get">GET</span>
       <span class="path">/categories/list</span>
       <p>Lista todas as categorias.</p>
+    <h2>Exemplos de uso</h2>
+    <div class="api-tabs" data-scope="items">
+      <div class="api-tablist" role="tablist">
+        <button role="tab" data-lang="curl">cURL</button>
+        <button role="tab" data-lang="python">Python</button>
+        <button role="tab" data-lang="php">PHP</button>
+      </div>
+
+      <div class="api-tabpanels">
+        <pre role="tabpanel" data-lang="curl">
+curl -X "GET" "http://api.pedlog.com/items/list" -H "accept: application/json" -H "X-Session-ID: YOUR-SESSION-ID"
+        </pre>
+
+        <pre role="tabpanel" data-lang="python">
+import requests
+url = "http://api.pedlog.com/items/list"
+headers = {
+    "Accept": "application/json",
+    "X-Session-ID": "YOUR-SESSION-ID",
+}
+response = requests.get(url, headers=headers, timeout=10)
+        </pre>
+        <pre role="tabpanel" data-lang="php">
+$ch = curl_init("http://api.pedlog.com/items/list");
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+        "Accept: application/json",
+        "X-Session-ID: YOUR-SESSION-ID",
+    ],
+]);
+
+$response = curl_exec($ch);
+if ($response === false) {
+    throw new RuntimeException(curl_error($ch));
+}
+        </pre>
     </div>
 
     <div class="endpoint">
@@ -228,8 +298,105 @@ curl -X POST http://api.pedlog.com/auth/login -H "Content-Type: application/json
       <p>Cria uma nova categoria.</p>
       <pre>
 {
+"name": "RAM",
+"position": 1,
+"type_icon": "0",
+"icon": "fa-tags",
+"icon_name": "",
+"days": {
+    "sun": true,
+    "mon": true,
+    "tue": true,
+    "wed": true,
+    "thu": true,
+    "fri": true,
+    "sat": true
+  }
 }
       </pre>
+      <h2>Exemplos de uso</h2>
+      <div class="api-tabs" data-scope="categories">
+        <div class="api-tablist" role="tablist">
+          <button role="tab" data-lang="curl">cURL</button>
+          <button role="tab" data-lang="python">Python</button>
+          <button role="tab" data-lang="php">PHP</button>
+        </div>
+
+        <div class="api-tabpanels">
+          <pre role="tabpanel" data-lang="curl">
+curl -X "POST" "http://api.pedlog.com/categories/create" -H "accept: application/json" -H "X-Session-ID: Your-Session-ID" -H "Content-Type: multipart/form-data" -F "payload={\"name\": \"RAM\",\"position\": 4,\"type_icon\": \"2\",\"icon\": \"fa-ram\",\"icon_name\": \"\",\"days\": {\"sun\": true,\"mon\": true,\"tue\": true,\"wed\": true,\"thu\": true,\"fri\": true,\"sat\": true}}"
+          </pre>
+
+          <pre role="tabpanel" data-lang="python">
+import requests
+import json
+
+url = "http://api.pedlog.com/categories/create"
+headers = {
+    "Accept": "application/json",
+    "X-Session-ID": "Your-Session-ID",
+}
+payload = {
+    "name": "RAM",
+    "position": 4,
+    "type_icon": "2",
+    "icon": "fa-ram",
+    "icon_name": "",
+    "days": {
+        "sun": True,
+        "mon": True,
+        "tue": True,
+        "wed": True,
+        "thu": True,
+        "fri": True,
+        "sat": True,
+    }
+}
+files = {
+    "payload": (None, json.dumps(payload), "application/json")
+}
+response = requests.post(url, headers=headers, files=files, timeout=10)
+          </pre>
+          <pre role="tabpanel" data-lang="php">
+$url = "http://api.pedlog.com/categories/create";
+$payload = [
+    "name" => "RAM",
+    "position" => 6,
+    "type_icon" => "2",
+    "icon" => "fa-ram",
+    "icon_name" => "",
+    "days" => [
+        "sun" => true,
+        "mon" => true,
+        "tue" => true,
+        "wed" => true,
+        "thu" => true,
+        "fri" => true,
+        "sat" => true,
+    ]
+];
+
+$ch = curl_init($url);
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => [
+        "Accept: application/json",
+        "X-Session-ID: Your-Session-ID",
+    ],
+    CURLOPT_POSTFIELDS => [
+        "payload" => json_encode($payload),
+    ],
+]);
+
+$response = curl_exec($ch);
+
+if ($response === false) {
+    throw new RuntimeException(curl_error($ch));
+}
+          </pre>
+        </div>
+      </div>
     </div>
 
     <div class="endpoint">
