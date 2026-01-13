@@ -232,7 +232,7 @@ class ItemsService(Service):
 							  )
 
 		headers = {"X-CSRF-TOKEN": csrf}
-		response = self.session.post(self.edit_url, data=data, headers=headers)
+		response = self.session.post(self.edit_url, data=data,files=files, headers=headers)
 		try:
 			resp.raise_for_status()
 			return resp.json()
