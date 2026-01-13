@@ -154,85 +154,100 @@ class ItemsService(Service):
 
 	def edit(self,
 				id:int,
-			    category: str,
-			    name: str = "",
-			    external_code: str = "",
-			    ncm_code: str = "",
-			    description: str = "",
-			    price: str = "15",
-			    price_cost: str = "10",
-			    free_shipping: str = "0",
-			    is_unavailable_delivery: str = "0",
-			    switch_offer: str = "0",
-			    price_offer: str = "",
-			    item_type: str = "0",
-			    price_type: str = "0",
-			    amount: str = "-1",
-			    unit_measure_type: str = "0",
-			    preparation_time: str = "1",
-			    serve_people_amount: str = "3",
-			    flavor_amount_min: str = "0",
-			    flavor_amount: str = "0",
-			    days: dict = None,
-			    switch_slide: str = "0",
-			    slide_item: list = None,
-			    hours_json: str = "",
+				category: str,
+				name: str = "",
+				external_code: str = "",
+				ncm_code: str = "",
+				description: str = "",
+				price: str = "15",
+				price_cost: str = "10",
+				free_shipping: str = "0",
+				is_unavailable_delivery: str = "0",
+				switch_offer: str = "0",
+				price_offer: str = "",
+				item_type: str = "0",
+				price_type: str = "0",
+				amount: str = "-1",
+				unit_measure_type: str = "0",
+				preparation_time: str = "1",
+				serve_people_amount: str = "3",
+				flavor_amount_min: str = "0",
+				flavor_amount: str = "0",
+				days: dict = None,
+				switch_slide: str = "0",
+				slide_items: list = [],
+				hours_json: str = "",
+				img = None,
 			):
 
-	    csrf = self.get_csrf(self.panel_url)
-	    if not csrf:
-	        return {"error": "CSRF token not found"}
+		csrf = self.get_csrf(self.panel_url)
+		if not csrf:
+			return {"error": "CSRF token not found"}
 
-	    # default days
-	    if days is None:
-	        days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
+		# default days
+		if days is None:
+			days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
 
+		data = {
+			"action": "editItem",
+			"id": id,
+			"category": category,
+			"name": name,
+			"external_code": external_code,
+			"ncm_code": ncm_code,
+			"description": description,
+			"price": price,
+			"price_cost": price_cost,
+			"free_shipping": free_shipping,
+			"is_unavailable_delivery": is_unavailable_delivery,
+			"switch_offer": switch_offer,
+			"price_offer": price_offer,
+			"item_type": item_type,
+			"price_type": price_type,
+			"amount": amount,
+			"unit_measure_type": unit_measure_type,
+			"preparation_time": preparation_time,
+			"serve_people_amount": serve_people_amount,
+			"flavor_amount_min": flavor_amount_min,
+			"flavor_amount": flavor_amount,
+			"switch_slide": switch_slide,
+			"hours": hours_json,
+		}
 
-	    # base payload EXACTLY like Chrome sends
-	    data = {
-	        "action": "editItem",
-	        "id": id,
-	        "category": category,
-	        "name": name,
-	        "external_code": external_code,
-	        "ncm_code": ncm_code,
-	        "description": description,
-	        "price": price,
-	        "price_cost": price_cost,
-	        "free_shipping": free_shipping,
-	        "is_unavailable_delivery": is_unavailable_delivery,
-	        "switch_offer": switch_offer,
-	        "price_offer": price_offer,  # MUST be empty string unless offer enabled
-	        "item_type": item_type,
-	        "price_type": price_type,
-	        "amount": amount,
-	        "unit_measure_type": unit_measure_type,
-	        "preparation_time": preparation_time,
-	        "serve_people_amount": serve_people_amount,
-	        "flavor_amount_min": flavor_amount_min,
-	        "flavor_amount": flavor_amount,
-	        "switch_slide": switch_slide,
-	        "hours": hours_json,
-	    }
+		days = days or {}
+		for d in ['sun','mon','tue','wed','thu','fri','sat']:
+			data[d] = '1' if days.get(d) else '0'
 
-	    days = days or {}
-	    for d in ['sun','mon','tue','wed','thu','fri','sat']:
-	        data[d] = '1' if days.get(d) else '0'
+		files = None
+		if img:
+			files = {
+				"img": (
+				img.filename,
+				img.file,
+				img.content_type or "application/octet-stream"
+				)
+			}
 
-	    # Insert slide items
-	    if slide_item:
-	        for i, slide in enumerate(slide_item):
-	            data[f"slide_item_{i}"] = slide
-	    
-	    headers = {"X-CSRF-TOKEN": csrf}
-	    response = self.session.post(self.edit_url, data=data, headers=headers)
-	    print(response)
-	    try:
-	        print("RAW TEXT: " + str(response.text))
-	        resp.raise_for_status()
-	        return resp.json()
-	    except:
-	        return {"raw": response.text}
+		# Insert slide items
+		if switch_slide == "1":
+
+			if files is None:
+				files = {}
+
+				for i, slide in enumerate(slide_items):
+					files[f"slide_item_{i}"] = (
+								slide.filename,
+								slide.file,
+								slide.content_type or "application/octet-stream"
+							  )
+
+		headers = {"X-CSRF-TOKEN": csrf}
+		response = self.session.post(self.edit_url, data=data, headers=headers)
+		try:
+			resp.raise_for_status()
+			return resp.json()
+		except:
+			return {"raw": response.text}
 
 
 	def delete(self,item_id: int):

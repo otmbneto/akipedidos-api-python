@@ -27,7 +27,6 @@ def create_item(
     session_id: str = Depends(get_session_id),
 ):
 
-    print("IMG: " + str(img))
     data = json.loads(payload)
     if img is not None:
         data["img"] = img
@@ -46,11 +45,30 @@ def create_item(
 
 @router.post("/edit", tags=["Items"])
 def edit_item(
-    payload: dict,
+    payload: str = Form(...),
+    img: UploadFile | None = File(None),
+    slide_item_0: UploadFile | None = File(None),
+    slide_item_1: UploadFile | None = File(None),
+    slide_item_2: UploadFile | None = File(None),
+    slide_item_3: UploadFile | None = File(None),
+    slide_item_4: UploadFile | None = File(None),
     client: AkiPedidosClient = Depends(get_client),
     session_id: str = Depends(get_session_id),
 ):
-    result = client.edit_item(session_id,payload)
+
+    data = json.loads(payload)
+    if img is not None:
+        data["img"] = img
+
+    temp = [slide_item_0,slide_item_1,slide_item_2,slide_item_3,slide_item_4]
+    data["slide_items"] = []
+    for t in temp:
+        if t is None:
+            break
+        data["slide_items"].append(t)
+        data["switch_slide"] = "1"
+
+    result = client.edit_item(session_id,data)
     return {"status": "ok", "result": result}
 
 @router.post("/delete", tags=["Items"])
