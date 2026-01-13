@@ -72,7 +72,7 @@ class ItemsService(Service):
 			    serve_people_amount: str = "3",
 			    flavor_amount_min: str = "0",
 			    flavor_amount: str = "0",
-			    days: dict = None,
+			    days: dict = {"sun": True, "mon": True, "tue": True, "wed": True, "thu": True, "fri": True, "sat": True},
 			    switch_slide: str = "0",
 			    slide_items: list = [],
 			    hours_json: str = "",
@@ -82,10 +82,6 @@ class ItemsService(Service):
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			return {"error": "CSRF token not found"}
-
-		# default days
-		if days is None:
-			days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
 
 		if len(hours_json) == 0:
 			print("hours are empty. creating default")
@@ -103,7 +99,7 @@ class ItemsService(Service):
 	        "free_shipping": free_shipping,
 	        "is_unavailable_delivery": is_unavailable_delivery,
 	        "switch_offer": switch_offer,
-	        "price_offer": price_offer,  # MUST be empty string unless offer enabled
+	        "price_offer": price_offer, 
 	        "item_type": item_type,
 	        "price_type": price_type,
 	        "amount": amount,
@@ -116,9 +112,8 @@ class ItemsService(Service):
 	        "hours": str(hours_json),
 	    }
 
-		days = days or {}
-		for d in ['sun','mon','tue','wed','thu','fri','sat']:
-			data[d] = '1' if days.get(d) else '0'
+		for k,v in days.items():
+			data[k] = '1' if v else '0'
 
 		files = None
 		if img:
@@ -173,7 +168,7 @@ class ItemsService(Service):
 				serve_people_amount: str = "3",
 				flavor_amount_min: str = "0",
 				flavor_amount: str = "0",
-				days: dict = None,
+				days: dict = {"sun": True, "mon": True, "tue": True, "wed": True, "thu": True, "fri": True, "sat": True},
 				switch_slide: str = "0",
 				slide_items: list = [],
 				hours_json: str = "",
@@ -183,10 +178,6 @@ class ItemsService(Service):
 		csrf = self.get_csrf(self.panel_url)
 		if not csrf:
 			return {"error": "CSRF token not found"}
-
-		# default days
-		if days is None:
-			days = {"sun": "1", "mon": "1", "tue": "1", "wed": "1", "thu": "1", "fri": "1", "sat": "1"}
 
 		data = {
 			"action": "editItem",
@@ -211,12 +202,11 @@ class ItemsService(Service):
 			"flavor_amount_min": flavor_amount_min,
 			"flavor_amount": flavor_amount,
 			"switch_slide": switch_slide,
-			"hours": hours_json,
+			"hours": str(hours_json),
 		}
 
-		days = days or {}
-		for d in ['sun','mon','tue','wed','thu','fri','sat']:
-			data[d] = '1' if days.get(d) else '0'
+		for k,v in days.items():
+			data[k] = '1' if v else '0'
 
 		files = None
 		if img:
